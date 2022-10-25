@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Start - Leaflet</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="leaflet-routing-machine.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.0/dist/leaflet.css"
+        integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.3.0/dist/leaflet.js"
+        integrity="sha512-C7BBF9irt5R7hqbUm2uxtODlUVs+IsNu2UULGuZN7gM+k/mmeG4xvIEac01BtQa4YIkUpp23zZC4wIwuXaPMQA=="
+        crossorigin=""></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #mapid {
+            width: 100%;
+        }
+		@keyframes blinkMarker {
+			0% {
+				opacity: 0.5;
+				filter: hue-rotate(0);
+		
+			}
+			100% {
+				opacity: 1;
+				filter: hue-rotate(360deg);
+			}
+		}
+		.leaflet-marker-icon:first-child {
+			-webkit-animation: blinkMarker .5s alternate infinite;
+			-moz-animation: blinkMarker .5s alternate infinite;
+			animation: blinkMarker .5s alternate infinite;
+		}
+    </style>
+</head>
+<body>
+
+    <div id="mapid" style="width:100%;"></div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="leaflet-routing-machine.min.js"></script>
+    <script>
+
+	$(document).ready(function() {
+
+		$('#mapid').height(window.innerHeight);
+
+		var map = L.map('mapid', {
+			zoomControl : false
+		}).setView([49.25077560316286,-123.08944702148438], 8);
+
+		L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png', {
+			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(map)
+
+		var marker = L.marker([49.25077560316286, -123.08944702148438]).addTo(map)
+
+		map.on('click', function(e) {
+			var newMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map)
+			L.Routing.control(
+				{
+					waypoints: [
+						L.latLng(49.25077560316286, -123.08944702148438),
+						L.latLng([e.latlng.lat, e.latlng.lng]),
+					]
+				}
+			).on('routesfound', function(e) {
+				var routes = e.routes
+				console.log(routes.length)
+				routes[0].coordinates.forEach((coord,index) => {
+					setTimeout(() => {
+						marker.setLatLng([coord.lat, coord.lng])
+					}, 15*index)
+				})
+			})
+			.addTo(map)
+		})
+		// L.Routing.control(
+		// 	{
+		// 	waypoints: [
+		// 		L.latLng(57.74, 11.94),
+		// 		L.latLng(57.6792, 11.949),
+		// 	]
+		// }
+		// ).addTo(map)
+	})
+
+    </script>
+</body>
+</html>

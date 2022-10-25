@@ -20,6 +20,65 @@
         #mapid {
             width: 100%;
         }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 0;
+            background: black;
+            color: white;
+            font-size: 20px;
+        }
+
+        .leaflet-popup-content {
+            margin: 5px;
+        }
+
+        .leaflet-popup-tip {
+            background: black;
+        }
+
+        .leaflet-popup-close-button {
+            display: none;
+        }
+
+        #overlay {
+            position: absolute;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            right: 0;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 1px 1px 1px grey;
+            min-height: 200px;
+
+            /*bottom: 0;*/
+            /* margin: 0 auto; */
+        }
+
+        #overlay h2,
+        #slide-in h2 {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 10px;
+        }
+
+        #slide-in {
+            padding: 10px;
+            position: absolute;
+            width: 250px;
+            z-index: 1000;
+            background: white;
+            margin-left: -270px;
+            transition: 0.5s;
+        }
+
+        #slide-in.in {
+            margin-left: 0px;
+        }
+
+        #slider {
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
@@ -38,7 +97,25 @@
 		L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png', {
 			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 		}).addTo(map)
-		
+		setInterval(function() {
+			if ("geolocation" in navigator) {
+				navigator.geolocation.getCurrentPosition(function(position){
+					console.log(position.coords.latitude, position.coords.longitude)
+					map.setView([position.coords.latitude, position.coords.longitude], 17);
+					L.circle([position.coords.latitude, position.coords.longitude],{
+						radius: 50,
+						opacity: 0.5,
+						color: 'white',
+						weight: 1,
+						fillOpacity: 0.1,
+						fillColor: 'blue'
+						// https://leafletjs.com/reference.html#circle-option
+					}).addTo(map)
+				})
+			} else {
+				console.log(`You don't have geolocation`)
+			}
+		}, 5000)
 	})
 
     </script>
